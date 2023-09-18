@@ -1,0 +1,58 @@
+---
+title: "data_607lab2"
+author: "Michael Robinson"
+date: "2023-09-15"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+# Connecting to SQL database 
+
+```{r}
+ 
+library(DBI)
+library(RMySQL) 
+library(ggplot2)
+library(dplyr)
+
+
+
+
+con <- dbConnect(MySQL(), 
+                 user = "root",
+                 password = "",
+                 dbname = "MovieRating",
+                 host = "35.192.143.134")  
+
+```
+
+# Loading data from SQL database
+
+```{r}
+ratings_data <- dbGetQuery(con, "SELECT * FROM movie_ratings")
+
+# graphic representation of rating data
+ggplot(ratings_data, aes(x = movie, y = rating)) +
+  geom_bar(stat = "identity", fill = "blue") +
+  labs(title = "Average Ratings of Popular Movies",
+       x = "Movie Title",
+       y = "Average Rating")
+
+dbDisconnect(con)
+
+
+
+# Group the data by movie name and summarize ratings
+
+formatted_data <- ratings_data %>%
+  group_by(movie) %>%
+  summarize(avg_rating = mean(rating))
+
+print(formatted_data)
+
+
+```
+
+# Conclusion: after looking at the data and the Chart i can conclude that the Movie Equalizer had the Highest rating and Barbie was the lowest.
